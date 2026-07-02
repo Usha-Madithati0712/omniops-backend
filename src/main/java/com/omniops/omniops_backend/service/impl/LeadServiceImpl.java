@@ -1,5 +1,6 @@
 package com.omniops.omniops_backend.service.impl;
 
+import com.omniops.omniops_backend.dto.LeadDashboardDTO;
 import com.omniops.omniops_backend.entity.Lead;
 import com.omniops.omniops_backend.repository.LeadRepository;
 import com.omniops.omniops_backend.service.LeadService;
@@ -32,5 +33,16 @@ public class LeadServiceImpl implements LeadService {
     @Override
     public void deleteLead(Integer id) {
         leadRepository.deleteById(id);
+    }
+
+    @Override
+    public LeadDashboardDTO getDashboard() {
+
+        return LeadDashboardDTO.builder()
+                .totalLeads(leadRepository.count())
+                .newLeads(leadRepository.countByLeadStatus("New"))
+                .interestedLeads(leadRepository.countByLeadStatus("Interested"))
+                .convertedLeads(leadRepository.countByLeadStatus("Converted"))
+                .build();
     }
 }

@@ -4,7 +4,7 @@ import com.omniops.omniops_backend.entity.Lead;
 import com.omniops.omniops_backend.service.LeadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
+import com.omniops.omniops_backend.dto.LeadDashboardDTO;
 import java.util.List;
 
 @RestController
@@ -33,4 +33,10 @@ public class LeadController {
     public void delete(@PathVariable Integer id) {
         leadService.deleteLead(id);
     }
+    @GetMapping("/dashboard")
+public LeadDashboardDTO dashboard() {
+
+    return leadService.getDashboard();
+
+}
 }
