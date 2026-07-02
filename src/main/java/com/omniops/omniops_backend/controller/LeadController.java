@@ -39,4 +39,11 @@ public LeadDashboardDTO dashboard() {
     return leadService.getDashboard();
 
 }
+@PutMapping("/{id}")
+public Lead update(@PathVariable Integer id,
+                   @RequestBody Lead lead){
+
+    return leadService.updateLead(id, lead);
+
+}
 }

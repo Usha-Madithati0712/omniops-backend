@@ -13,7 +13,10 @@ public interface LeadService {
 
     Lead getLead(Integer id);
 
+    Lead updateLead(Integer id, Lead lead);
+
     void deleteLead(Integer id);
 
     LeadDashboardDTO getDashboard();
+
 }
