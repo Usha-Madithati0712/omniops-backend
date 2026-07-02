@@ -28,7 +28,13 @@ public class LeadController {
     public Lead get(@PathVariable Integer id) {
         return leadService.getLead(id);
     }
+@PutMapping("/{id}")
+public Lead update(@PathVariable Integer id,
+                   @RequestBody Lead lead){
 
+    return leadService.updateLead(id, lead);
+
+}
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         leadService.deleteLead(id);
@@ -39,11 +45,5 @@ public LeadDashboardDTO dashboard() {
     return leadService.getDashboard();
 
 }
-@PutMapping("/{id}")
-public Lead update(@PathVariable Integer id,
-                   @RequestBody Lead lead){
 
-    return leadService.updateLead(id, lead);
-
-}
 }

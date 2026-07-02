@@ -30,23 +30,25 @@ public class LeadServiceImpl implements LeadService {
         return leadRepository.findById(id).orElse(null);
     }
 @Override
-public Lead updateLead(Integer id, Lead updatedLead) {
+public Lead updateLead(Integer id, Lead lead) {
 
-    Lead existingLead = leadRepository.findById(id).orElse(null);
+    Lead existing = leadRepository.findById(id).orElse(null);
 
-    if(existingLead == null){
+    if(existing == null){
         return null;
     }
 
-    existingLead.setCompanyName(updatedLead.getCompanyName());
-    existingLead.setLeadStatus(updatedLead.getLeadStatus());
-    existingLead.setAssignedTo(updatedLead.getAssignedTo());
-    existingLead.setIndustry(updatedLead.getIndustry());
-    existingLead.setRemarks(updatedLead.getRemarks());
-    existingLead.setSource(updatedLead.getSource());
+    existing.setCompanyName(lead.getCompanyName());
+    existing.setContactPerson(lead.getContactPerson());
+    existing.setEmail(lead.getEmail());
+    existing.setPhone(lead.getPhone());
+    existing.setIndustry(lead.getIndustry());
+    existing.setSource(lead.getSource());
+    existing.setAssignedTo(lead.getAssignedTo());
+    existing.setLeadStatus(lead.getLeadStatus());
+    existing.setRemarks(lead.getRemarks());
 
-    return leadRepository.save(existingLead);
-
+    return leadRepository.save(existing);
 }
     @Override
     public void deleteLead(Integer id) {
