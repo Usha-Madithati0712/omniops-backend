@@ -1,5 +1,5 @@
 package com.omniops.omniops_backend.entity;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,6 +20,7 @@ public class Client {
     private Integer clientId;
 @ManyToOne(fetch = FetchType.LAZY)
 @JoinColumn(name = "lead_id")
+@JsonIgnore
 private Lead lead;
     @Column(name = "client_code")
     private String clientCode;
