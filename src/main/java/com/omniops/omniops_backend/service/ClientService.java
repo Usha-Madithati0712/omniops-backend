@@ -11,7 +11,7 @@ public interface ClientService {
     List<Client> findAll();
 
     Client findById(Integer id);
-
+Client update(Integer id, Client client);
     void delete(Integer id);
 Client convertLead(Integer leadId);
 }

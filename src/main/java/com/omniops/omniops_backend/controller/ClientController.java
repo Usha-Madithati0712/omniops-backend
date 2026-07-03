@@ -34,7 +34,13 @@ public class ClientController {
     public Client get(@PathVariable Integer id){
         return clientService.findById(id);
     }
+@PutMapping("/{id}")
+public Client update(@PathVariable Integer id,
+                     @RequestBody Client client){
 
+    return clientService.update(id, client);
+
+}
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id){
         clientService.delete(id);

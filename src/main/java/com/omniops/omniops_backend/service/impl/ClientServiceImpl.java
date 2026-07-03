@@ -30,7 +30,25 @@ public class ClientServiceImpl implements ClientService {
     public Client findById(Integer id) {
         return clientRepository.findById(id).orElse(null);
     }
+@Override
+public Client update(Integer id, Client client) {
 
+    Client existing = clientRepository.findById(id).orElse(null);
+
+    if (existing == null) {
+        return null;
+    }
+
+    existing.setCompanyName(client.getCompanyName());
+    existing.setIndustry(client.getIndustry());
+    existing.setRecruiterName(client.getRecruiterName());
+    existing.setExpectedCtc(client.getExpectedCtc());
+    existing.setPaymentStatus(client.getPaymentStatus());
+    existing.setStatus(client.getStatus());
+    existing.setClientType(client.getClientType());
+
+    return clientRepository.save(existing);
+}
     @Override
     public void delete(Integer id) {
         clientRepository.deleteById(id);
@@ -49,11 +67,15 @@ public Client convertLead(Integer leadId) {
     client.setLead(lead);
     client.setCompanyName(lead.getCompanyName());
     client.setIndustry(lead.getIndustry());
-    client.setRecruiterName("TEST_RECRUITER");
-client.setExpectedCtc("999999");
+   client.setRecruiterName(lead.getAssignedTo());
+
+client.setExpectedCtc("");
+
+client.setPaymentStatus("Pending");
     client.setClientType(Client.ClientType.Startup);
     client.setStatus(Client.Status.Active);
-
+lead.setLeadStatus("Converted");
+leadRepository.save(lead);
     return clientRepository.save(client);
 }
 }

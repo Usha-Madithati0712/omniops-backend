@@ -67,9 +67,17 @@ private String paymentStatus;
         Enterprise
     }
 
-    public enum Status {
-        Active,
-        Inactive,
-        On_Hold
-    }
+   public enum Status {
+
+    Active,
+
+    Paused,
+
+    Stopped,
+
+    Placed,
+
+    Non_Priority
+
+}
 }
