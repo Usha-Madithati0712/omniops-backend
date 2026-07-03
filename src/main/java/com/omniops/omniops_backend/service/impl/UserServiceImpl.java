@@ -103,7 +103,8 @@ user.setUsername(request.getEmployeeCode().toLowerCase());
                 permissionService.getPermissionsByRole(
                         user.getRole().getRoleId()
                 );
-
+System.out.println("ROLE ID = " + user.getRole().getRoleId());
+System.out.println("PERMISSIONS = " + permissions);
         user.setLastLogin(LocalDateTime.now());
 
         userRepository.save(user);
