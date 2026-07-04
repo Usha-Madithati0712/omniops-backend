@@ -22,29 +22,47 @@ public class BoxAController {
     @PostMapping(consumes = {"multipart/form-data"})
 public BoxA save(
 
-        @RequestParam("fullName") String fullName,
-        @RequestParam("phone") String phone,
-        @RequestParam("email") String email,
-        @RequestParam("location") String location,
-        @RequestParam("company") String company,
-        @RequestParam("experience") String experience,
-        @RequestParam(value = "resume", required = false) MultipartFile resume,
-        @RequestParam("previousCompany") String previousCompany,
-        @RequestParam("yearsWorked") String yearsWorked,
-        @RequestParam("designation") String designation,
-        @RequestParam("qualification") String qualification,
-        @RequestParam("college") String college,
-        @RequestParam("graduationYear") String graduationYear,
-        @RequestParam("targetRole") String targetRole,
-        @RequestParam("technology") String technology,
-        @RequestParam("expectedCTC") String expectedCTC,
-        @RequestParam("preferredLocation") String preferredLocation,
-        @RequestParam("username") String username,
-        @RequestParam("password") String password,
-        @RequestParam("assignedRecruiter") String assignedRecruiter
+     @RequestParam("fullName") String fullName,
+
+@RequestParam("phone") String phone,
+
+@RequestParam("email") String email,
+
+@RequestParam(value = "location", required = false) String location,
+
+@RequestParam(value = "company", required = false) String company,
+
+@RequestParam(value = "experience", required = false) String experience,
+
+@RequestParam(value = "resume", required = false) MultipartFile resume,
+
+@RequestParam(value = "previousCompany", required = false) String previousCompany,
+
+@RequestParam(value = "yearsWorked", required = false) String yearsWorked,
+
+@RequestParam(value = "designation", required = false) String designation,
+
+@RequestParam(value = "qualification", required = false) String qualification,
+
+@RequestParam(value = "college", required = false) String college,
+
+@RequestParam(value = "graduationYear", required = false) String graduationYear,
+
+@RequestParam(value = "targetRole", required = false) String targetRole,
+
+@RequestParam(value = "technology", required = false) String technology,
+
+@RequestParam(value = "expectedCTC", required = false) String expectedCTC,
+
+@RequestParam(value = "preferredLocation", required = false) String preferredLocation,
+
+@RequestParam(value = "username", required = false) String username,
+
+@RequestParam(value = "password", required = false) String password,
+
+@RequestParam(value = "assignedRecruiter", required = false) String assignedRecruiter
 
 ) throws IOException {
-
     BoxA boxA = new BoxA();
 
     boxA.setFullName(fullName);
@@ -67,6 +85,8 @@ public BoxA save(
     boxA.setPassword(password);
     boxA.setAssignedRecruiter(assignedRecruiter);
 
+   try {
+
     if (resume != null && !resume.isEmpty()) {
 
         String uploadDir = "uploads/";
@@ -74,9 +94,7 @@ public BoxA save(
         File dir = new File(uploadDir);
 
         if (!dir.exists()) {
-
             dir.mkdirs();
-
         }
 
         String fileName =
@@ -85,13 +103,19 @@ public BoxA save(
         resume.transferTo(new File(uploadDir + fileName));
 
         boxA.setResumeFile(fileName);
-
     }
 
-    return boxAService.save(boxA);
+} catch (Exception e) {
+
+    e.printStackTrace();
+
+    throw e;
+    
 
 }
+return boxAService.save(boxA);
 
+}
     @GetMapping
     public List<BoxA> all() {
         return boxAService.findAll();
