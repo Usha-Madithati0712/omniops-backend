@@ -1,15 +1,17 @@
 package com.omniops.omniops_backend.controller;
+
+import com.omniops.omniops_backend.dto.BoxARequest;
+import com.omniops.omniops_backend.entity.BoxA;
+import com.omniops.omniops_backend.service.BoxAService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
-import com.omniops.omniops_backend.entity.BoxA;
-import com.omniops.omniops_backend.service.BoxAService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/boxa")
@@ -19,98 +21,50 @@ public class BoxAController {
 
     private final BoxAService boxAService;
 
-    @PostMapping(consumes = {"multipart/form-data"})
-public BoxA save(
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public BoxA save(@ModelAttribute BoxARequest request) throws IOException {
 
-     @RequestParam("fullName") String fullName,
+        BoxA boxA = new BoxA();
 
-@RequestParam("phone") String phone,
+        boxA.setFullName(request.getFullName());
+        boxA.setPhone(request.getPhone());
+        boxA.setEmail(request.getEmail());
+        boxA.setLocation(request.getLocation());
+        boxA.setCompany(request.getCompany());
+        boxA.setExperience(request.getExperience());
+        boxA.setPreviousCompany(request.getPreviousCompany());
+        boxA.setYearsWorked(request.getYearsWorked());
+        boxA.setDesignation(request.getDesignation());
+        boxA.setQualification(request.getQualification());
+        boxA.setCollege(request.getCollege());
+        boxA.setGraduationYear(request.getGraduationYear());
+        boxA.setTargetRole(request.getTargetRole());
+        boxA.setTechnology(request.getTechnology());
+        boxA.setExpectedCTC(request.getExpectedCTC());
+        boxA.setPreferredLocation(request.getPreferredLocation());
+        boxA.setUsername(request.getUsername());
+        boxA.setPassword(request.getPassword());
+        boxA.setAssignedRecruiter(request.getAssignedRecruiter());
 
-@RequestParam("email") String email,
+        MultipartFile resume = request.getResume();
 
-@RequestParam(value = "location", required = false) String location,
+        if (resume != null && !resume.isEmpty()) {
 
-@RequestParam(value = "company", required = false) String company,
+            String uploadDir = System.getProperty("java.io.tmpdir");
 
-@RequestParam(value = "experience", required = false) String experience,
+            String fileName =
+                    UUID.randomUUID() + "_" + resume.getOriginalFilename();
 
-@RequestParam(value = "resume", required = false) MultipartFile resume,
+            File destination = new File(uploadDir, fileName);
 
-@RequestParam(value = "previousCompany", required = false) String previousCompany,
+            resume.transferTo(destination);
 
-@RequestParam(value = "yearsWorked", required = false) String yearsWorked,
+            boxA.setResumeFile(fileName);
+        }
 
-@RequestParam(value = "designation", required = false) String designation,
-
-@RequestParam(value = "qualification", required = false) String qualification,
-
-@RequestParam(value = "college", required = false) String college,
-
-@RequestParam(value = "graduationYear", required = false) String graduationYear,
-
-@RequestParam(value = "targetRole", required = false) String targetRole,
-
-@RequestParam(value = "technology", required = false) String technology,
-
-@RequestParam(value = "expectedCTC", required = false) String expectedCTC,
-
-@RequestParam(value = "preferredLocation", required = false) String preferredLocation,
-
-@RequestParam(value = "username", required = false) String username,
-
-@RequestParam(value = "password", required = false) String password,
-
-@RequestParam(value = "assignedRecruiter", required = false) String assignedRecruiter
-
-) throws IOException {
-    BoxA boxA = new BoxA();
-
-    boxA.setFullName(fullName);
-    boxA.setPhone(phone);
-    boxA.setEmail(email);
-    boxA.setLocation(location);
-    boxA.setCompany(company);
-    boxA.setExperience(experience);
-    boxA.setPreviousCompany(previousCompany);
-    boxA.setYearsWorked(yearsWorked);
-    boxA.setDesignation(designation);
-    boxA.setQualification(qualification);
-    boxA.setCollege(college);
-    boxA.setGraduationYear(graduationYear);
-    boxA.setTargetRole(targetRole);
-    boxA.setTechnology(technology);
-    boxA.setExpectedCTC(expectedCTC);
-    boxA.setPreferredLocation(preferredLocation);
-    boxA.setUsername(username);
-    boxA.setPassword(password);
-    boxA.setAssignedRecruiter(assignedRecruiter);
-
-   try {
-
-    if (resume != null && !resume.isEmpty()) {
-
-        String uploadDir = System.getProperty("java.io.tmpdir");
-
-String fileName =
-UUID.randomUUID() + "_" + resume.getOriginalFilename();
-
-File destination = new File(uploadDir, fileName);
-
-resume.transferTo(destination);
-
-boxA.setResumeFile(fileName);
+        return boxAService.save(boxA);
     }
 
-}catch (Exception e) {
-
-    e.printStackTrace();
-
-    throw new RuntimeException("UPLOAD FAILED: " + e.getMessage(), e);
-
-}
-return boxAService.save(boxA);
-
-}
     @GetMapping
     public List<BoxA> all() {
         return boxAService.findAll();
