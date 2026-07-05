@@ -70,7 +70,7 @@ boxA.setResumeOriginalName(
 }
 
 
-System.out.println("Saved Resume : " + boxA.getResumeFile());
+System.out.println("Saved Resume : " + boxA.getResumeOriginalName());
 
 return boxAService.save(boxA);
     }
@@ -156,7 +156,8 @@ public ResponseEntity<Resource> viewResume(
     }
 
     Path path = Paths.get("uploads")
-            .resolve(boxA.getResumeFile());
+        .resolve("resumes")
+        .resolve(boxA.getResumeFile());
 
     Resource resource = new UrlResource(path.toUri());
 
@@ -165,12 +166,12 @@ public ResponseEntity<Resource> viewResume(
     }
 
     return ResponseEntity.ok()
-            .header(
-                    HttpHeaders.CONTENT_DISPOSITION,
-                    "inline; filename=\"" +
-                            boxA.getResumeFile() +
-                            "\""
-            )
-            .body(resource);
+        .header(
+                HttpHeaders.CONTENT_DISPOSITION,
+                "inline; filename=\"" +
+                        boxA.getResumeOriginalName() +
+                        "\""
+        )
+        .body(resource);
 }
 }
