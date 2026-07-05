@@ -23,7 +23,7 @@ public class BoxAController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BoxA save(@ModelAttribute BoxARequest request) throws IOException {
-
+System.out.println("========== BOX A CONTROLLER HIT ==========");
         BoxA boxA = new BoxA();
 
         boxA.setFullName(request.getFullName());
