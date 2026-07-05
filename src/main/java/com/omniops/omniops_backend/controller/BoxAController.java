@@ -89,28 +89,23 @@ public BoxA save(
 
     if (resume != null && !resume.isEmpty()) {
 
-        String uploadDir = "uploads/";
+        String uploadDir = System.getProperty("java.io.tmpdir");
 
-        File dir = new File(uploadDir);
+String fileName =
+UUID.randomUUID() + "_" + resume.getOriginalFilename();
 
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
+File destination = new File(uploadDir, fileName);
 
-        String fileName =
-                UUID.randomUUID() + "_" + resume.getOriginalFilename();
+resume.transferTo(destination);
 
-        resume.transferTo(new File(uploadDir + fileName));
-
-        boxA.setResumeFile(fileName);
+boxA.setResumeFile(fileName);
     }
 
-} catch (Exception e) {
+}catch (Exception e) {
 
     e.printStackTrace();
 
-    throw e;
-    
+    throw new RuntimeException("UPLOAD FAILED: " + e.getMessage(), e);
 
 }
 return boxAService.save(boxA);
