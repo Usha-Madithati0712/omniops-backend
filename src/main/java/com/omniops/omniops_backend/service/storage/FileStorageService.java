@@ -8,7 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.UUID;
-
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import java.net.MalformedURLException;
 @Service
 public class FileStorageService {
 
@@ -52,5 +54,17 @@ public class FileStorageService {
 
        return fileName;
     }
+public Resource loadFile(String folder, String fileName) throws MalformedURLException {
 
+    Path filePath = Paths.get(uploadDir, folder).resolve(fileName).normalize();
+
+    Resource resource = new UrlResource(filePath.toUri());
+
+    if(resource.exists() && resource.isReadable()){
+        return resource;
+    }
+
+    throw new RuntimeException("File not found : " + fileName);
+
+}
 }

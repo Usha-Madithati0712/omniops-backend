@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import com.omniops.omniops_backend.service.storage.FileStorageService;
 
 import org.springframework.http.MediaType;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaTypeFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -116,5 +119,63 @@ public ResponseEntity<?> uploadPayment(
 
         return ResponseEntity.ok("Payment Deleted Successfully");
     }
+@GetMapping("/proof/{id}")
+public ResponseEntity<Resource> viewProof(
+        @PathVariable Long id) throws IOException {
 
+    Payment payment = paymentService
+            .getPaymentById(id)
+            .orElseThrow(() ->
+                    new RuntimeException("Payment Not Found"));
+
+    if (payment.getPaymentProofPath() == null) {
+        return ResponseEntity.notFound().build();
+    }
+
+    Resource resource = fileStorageService.loadFile(
+            "payment-proofs",
+            payment.getPaymentProofPath()
+    );
+
+    String contentType = MediaTypeFactory
+            .getMediaType(resource)
+            .orElse(MediaType.APPLICATION_OCTET_STREAM)
+            .toString();
+
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_TYPE, contentType)
+            .body(resource);
+}
+@GetMapping("/invoice/{id}")
+public ResponseEntity<Resource> viewInvoice(
+        @PathVariable Long id) throws IOException {
+
+    Payment payment = paymentService
+            .getPaymentById(id)
+            .orElseThrow(() ->
+                    new RuntimeException("Payment Not Found"));
+
+    if (payment.getInvoicePdfPath() == null) {
+        return ResponseEntity.notFound().build();
+    }
+
+    Resource resource = fileStorageService.loadFile(
+            "invoices",
+            payment.getInvoicePdfPath()
+    );
+
+    return ResponseEntity.ok()
+            .header(
+                    HttpHeaders.CONTENT_DISPOSITION,
+                    "inline; filename=\"" +
+                            payment.getInvoicePdfPath() +
+                            "\""
+            )
+            .header(
+                    HttpHeaders.CONTENT_TYPE,
+                    "application/pdf"
+            )
+            .body(resource);
+
+}
 }
