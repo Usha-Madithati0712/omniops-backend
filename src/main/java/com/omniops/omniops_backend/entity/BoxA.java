@@ -35,7 +35,7 @@ public class BoxA {
     private String previousCompany;
 
     private String yearsWorked;
-
+private String resumeOriginalName;
     private String designation;
 
     private String qualification;

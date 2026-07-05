@@ -56,7 +56,7 @@ System.out.println("========== BOX A CONTROLLER HIT ==========");
 
         if (resume != null && !resume.isEmpty()) {
 
-        if (resume != null && !resume.isEmpty()) {
+       
 
     String fileName = fileStorageService.saveFile(
             resume,
@@ -64,9 +64,11 @@ System.out.println("========== BOX A CONTROLLER HIT ==========");
     );
 
     boxA.setResumeFile(fileName);
+boxA.setResumeOriginalName(
+        resume.getOriginalFilename()
+);
+}
 
-}
-}
 
 System.out.println("Saved Resume : " + boxA.getResumeFile());
 
@@ -83,12 +85,62 @@ return boxAService.save(boxA);
         return boxAService.findById(id);
     }
 
-    @PutMapping("/{id}")
-    public BoxA update(@PathVariable Integer id,
-                       @RequestBody BoxA boxA) {
-        return boxAService.update(id, boxA);
+    @PutMapping(
+        value = "/{id}",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+)
+public BoxA update(
+        @PathVariable Integer id,
+        @ModelAttribute BoxARequest request
+) throws IOException {
+
+    BoxA existing = boxAService.findById(id);
+
+    if (existing == null) {
+        return null;
     }
 
+    existing.setFullName(request.getFullName());
+    existing.setPhone(request.getPhone());
+    existing.setEmail(request.getEmail());
+    existing.setLocation(request.getLocation());
+    existing.setCompany(request.getCompany());
+    existing.setExperience(request.getExperience());
+
+    existing.setPreviousCompany(request.getPreviousCompany());
+    existing.setYearsWorked(request.getYearsWorked());
+    existing.setDesignation(request.getDesignation());
+
+    existing.setQualification(request.getQualification());
+    existing.setCollege(request.getCollege());
+    existing.setGraduationYear(request.getGraduationYear());
+
+    existing.setTargetRole(request.getTargetRole());
+    existing.setTechnology(request.getTechnology());
+    existing.setExpectedCTC(request.getExpectedCTC());
+    existing.setPreferredLocation(request.getPreferredLocation());
+
+    existing.setUsername(request.getUsername());
+    existing.setPassword(request.getPassword());
+    existing.setAssignedRecruiter(request.getAssignedRecruiter());
+
+    MultipartFile resume = request.getResume();
+
+    if (resume != null && !resume.isEmpty()) {
+
+        String fileName = fileStorageService.saveFile(
+                resume,
+                "resumes"
+        );
+
+        existing.setResumeFile(fileName);
+        existing.setResumeOriginalName(
+                resume.getOriginalFilename()
+        );
+    }
+
+    return boxAService.save(existing);
+}
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         boxAService.delete(id);
