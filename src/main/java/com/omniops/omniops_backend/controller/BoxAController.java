@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.omniops.omniops_backend.service.storage.FileStorageService;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -26,7 +26,7 @@ import java.net.MalformedURLException;
 public class BoxAController {
 
     private final BoxAService boxAService;
-
+private final FileStorageService fileStorageService;
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BoxA save(@ModelAttribute BoxARequest request) throws IOException {
 System.out.println("========== BOX A CONTROLLER HIT ==========");
@@ -56,22 +56,16 @@ System.out.println("========== BOX A CONTROLLER HIT ==========");
 
         if (resume != null && !resume.isEmpty()) {
 
-           String uploadDir = "uploads";
+        if (resume != null && !resume.isEmpty()) {
 
-           File dir = new File(uploadDir);
+    String fileName = fileStorageService.saveFile(
+            resume,
+            "resumes"
+    );
 
-if (!dir.exists()) {
-    dir.mkdirs();
+    boxA.setResumeFile(fileName);
+
 }
-
-String fileName =
-UUID.randomUUID() + "_" + request.getResume().getOriginalFilename();
-
-File destination = new File(dir, fileName);
-
-request.getResume().transferTo(destination);
-
-boxA.setResumeFile(fileName);
 }
 
 System.out.println("Saved Resume : " + boxA.getResumeFile());
