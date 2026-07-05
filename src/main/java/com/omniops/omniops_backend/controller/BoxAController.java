@@ -12,7 +12,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.net.MalformedURLException;
 @RestController
 @RequestMapping("/api/boxa")
 @RequiredArgsConstructor
@@ -93,4 +99,32 @@ return boxAService.save(boxA);
     public void delete(@PathVariable Integer id) {
         boxAService.delete(id);
     }
+    @GetMapping("/resume/{id}")
+public ResponseEntity<Resource> viewResume(
+        @PathVariable Integer id) throws MalformedURLException {
+
+    BoxA boxA = boxAService.findById(id);
+
+    if (boxA == null || boxA.getResumeFile() == null) {
+        return ResponseEntity.notFound().build();
+    }
+
+    Path path = Paths.get("uploads")
+            .resolve(boxA.getResumeFile());
+
+    Resource resource = new UrlResource(path.toUri());
+
+    if (!resource.exists() || !resource.isReadable()) {
+        return ResponseEntity.notFound().build();
+    }
+
+    return ResponseEntity.ok()
+            .header(
+                    HttpHeaders.CONTENT_DISPOSITION,
+                    "inline; filename=\"" +
+                            boxA.getResumeFile() +
+                            "\""
+            )
+            .body(resource);
+}
 }
