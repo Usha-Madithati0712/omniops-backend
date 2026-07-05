@@ -50,19 +50,27 @@ System.out.println("========== BOX A CONTROLLER HIT ==========");
 
         if (resume != null && !resume.isEmpty()) {
 
-            String uploadDir = System.getProperty("java.io.tmpdir");
+           String uploadDir = "uploads";
 
-            String fileName =
-                    UUID.randomUUID() + "_" + resume.getOriginalFilename();
+           File dir = new File(uploadDir);
 
-            File destination = new File(uploadDir, fileName);
+if (!dir.exists()) {
+    dir.mkdirs();
+}
 
-            resume.transferTo(destination);
+String fileName =
+UUID.randomUUID() + "_" + request.getResume().getOriginalFilename();
 
-            boxA.setResumeFile(fileName);
-        }
+File destination = new File(dir, fileName);
 
-        return boxAService.save(boxA);
+request.getResume().transferTo(destination);
+
+boxA.setResumeFile(fileName);
+}
+
+System.out.println("Saved Resume : " + boxA.getResumeFile());
+
+return boxAService.save(boxA);
     }
 
     @GetMapping
