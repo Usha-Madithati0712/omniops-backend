@@ -16,6 +16,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.net.MalformedURLException;
@@ -145,9 +147,10 @@ public BoxA update(
     public void delete(@PathVariable Integer id) {
         boxAService.delete(id);
     }
-    @GetMapping("/resume/{id}")
+   @GetMapping("/resume/{id}")
 public ResponseEntity<Resource> viewResume(
-        @PathVariable Integer id) throws MalformedURLException {
+        @PathVariable Integer id)
+        throws IOException {
 
     BoxA boxA = boxAService.findById(id);
 
@@ -165,7 +168,14 @@ public ResponseEntity<Resource> viewResume(
         return ResponseEntity.notFound().build();
     }
 
-    return ResponseEntity.ok()
+   String contentType = Files.probeContentType(path);
+
+if (contentType == null) {
+    contentType = "application/octet-stream";
+}
+
+return ResponseEntity.ok()
+        .contentType(org.springframework.http.MediaType.parseMediaType(contentType))
         .header(
                 HttpHeaders.CONTENT_DISPOSITION,
                 "inline; filename=\"" +
