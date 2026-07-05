@@ -6,14 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.omniops.omniops_backend.service.storage.FileStorageService;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.util.List;
 
 @RestController
@@ -33,101 +31,50 @@ private final FileStorageService fileStorageService;
                 paymentService.savePayment(payment)
         );
     }
-@PostMapping(
+    @PostMapping(
         value = "/upload",
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE
 )
 public ResponseEntity<?> uploadPayment(
 
-        @RequestParam String candidateName,
-        @RequestParam String technology,
-        @RequestParam String recruiterName,
+        @ModelAttribute Payment payment,
 
-        @RequestParam Double amount,
-        @RequestParam String paymentDate,
-        @RequestParam String paymentMethod,
+        @RequestParam(value = "paymentProof", required = false)
+        MultipartFile paymentProof,
 
-        @RequestParam(required = false) String upiId,
-        @RequestParam(required = false) String transactionId,
-
-        @RequestParam(required = false) String bankName,
-        @RequestParam(required = false) String chequeNumber,
-        @RequestParam(required = false) String accountNumber,
-        @RequestParam(required = false) String referenceNumber,
-
-        @RequestParam(required = false) String invoiceNo,
-        @RequestParam(required = false) String invoiceDate,
-
-        @RequestParam(required = false) Double gstAmount,
-        @RequestParam(required = false) Double totalAmount,
-
-        @RequestParam String paymentStatus,
-
-        @RequestParam(required = false) MultipartFile paymentProof,
-        @RequestParam(required = false) MultipartFile invoicePdf
+        @RequestParam(value = "invoicePdf", required = false)
+        MultipartFile invoicePdf
 
 ) throws IOException {
 
-    Payment payment = new Payment();
+    if (paymentProof != null && !paymentProof.isEmpty()) {
 
-    payment.setCandidateName(candidateName);
-    payment.setTechnology(technology);
-    payment.setRecruiterName(recruiterName);
+        String proof =
+                fileStorageService.saveFile(
+                        paymentProof,
+                        "payment-proofs"
+                );
 
-    payment.setAmount(java.math.BigDecimal.valueOf(amount));
+        payment.setPaymentProofPath(proof);
 
-    payment.setPaymentDate(java.time.LocalDate.parse(paymentDate));
-
-    payment.setPaymentMethod(paymentMethod);
-
-    payment.setUpiId(upiId);
-    payment.setTransactionId(transactionId);
-
-    payment.setBankName(bankName);
-    payment.setChequeNumber(chequeNumber);
-    payment.setAccountNumber(accountNumber);
-    payment.setReferenceNumber(referenceNumber);
-
-    payment.setInvoiceNo(invoiceNo);
-
-    if(invoiceDate != null && !invoiceDate.isBlank()){
-        payment.setInvoiceDate(
-                java.time.LocalDate.parse(invoiceDate)
-        );
     }
 
-    payment.setGstAmount(
-            java.math.BigDecimal.valueOf(
-                    gstAmount == null ? 0 : gstAmount
-            )
-    );
+    if (invoicePdf != null && !invoicePdf.isEmpty()) {
 
-    payment.setTotalAmount(
-            java.math.BigDecimal.valueOf(
-                    totalAmount == null ? 0 : totalAmount
-            )
-    );
+        String invoice =
+                fileStorageService.saveFile(
+                        invoicePdf,
+                        "invoices"
+                );
 
-    payment.setPaymentStatus(paymentStatus);
+        payment.setInvoicePdfPath(invoice);
 
-    String proofPath =
-            fileStorageService.saveFile(
-                    paymentProof,
-                    "payment-proofs"
-            );
+    }
 
-    String invoicePath =
-            fileStorageService.saveFile(
-                    invoicePdf,
-                    "invoices"
-            );
+    Payment saved =
+            paymentService.savePayment(payment);
 
-    payment.setPaymentProofPath(proofPath);
-    payment.setInvoicePdfPath(invoicePath);
-
-    return ResponseEntity.ok(
-            paymentService.savePayment(payment)
-    );
+    return ResponseEntity.ok(saved);
 
 }
     // GET ALL PAYMENTS

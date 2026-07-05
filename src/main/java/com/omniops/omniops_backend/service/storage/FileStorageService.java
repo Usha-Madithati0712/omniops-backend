@@ -50,7 +50,7 @@ public class FileStorageService {
                 StandardCopyOption.REPLACE_EXISTING
         );
 
-        return destination.toString();
+       return fileName;
     }
 
 }
