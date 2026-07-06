@@ -3,6 +3,9 @@ package com.omniops.omniops_backend.service.impl;
 import com.omniops.omniops_backend.entity.Onboarding;
 import com.omniops.omniops_backend.repository.OnboardingRepository;
 import com.omniops.omniops_backend.service.OnboardingService;
+import com.omniops.omniops_backend.entity.RecruitmentAssignment;
+import com.omniops.omniops_backend.repository.RecruitmentAssignmentRepository;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +17,37 @@ import java.util.Optional;
 public class OnboardingServiceImpl implements OnboardingService {
 
     private final OnboardingRepository onboardingRepository;
+private final RecruitmentAssignmentRepository recruitmentAssignmentRepository;
+   @Override
+public Onboarding saveOnboarding(Onboarding onboarding) {
 
-    @Override
-    public Onboarding saveOnboarding(Onboarding onboarding) {
-        return onboardingRepository.save(onboarding);
+    Onboarding saved = onboardingRepository.save(onboarding);
+
+    boolean exists = recruitmentAssignmentRepository
+            .existsByClientName(saved.getClientName());
+
+    if (!exists) {
+
+        RecruitmentAssignment assignment =
+                new RecruitmentAssignment();
+
+        assignment.setClientName(saved.getClientName());
+
+        assignment.setTechnology(saved.getTechnology());
+
+        assignment.setRecruiterName("");
+
+        assignment.setAssignedDate(LocalDate.now());
+
+        assignment.setPriority("Medium");
+
+        assignment.setStatus("Assigned");
+
+        recruitmentAssignmentRepository.save(assignment);
     }
 
+    return saved;
+}
     @Override
     public List<Onboarding> getAllOnboardings() {
         return onboardingRepository.findAll();
