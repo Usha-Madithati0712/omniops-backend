@@ -1,5 +1,9 @@
 package com.omniops.omniops_backend.service.impl;
+import com.omniops.omniops_backend.entity.Enrollment;
+import com.omniops.omniops_backend.repository.EnrollmentRepository;
 
+import java.time.LocalDate;
+import java.math.BigDecimal;
 import com.omniops.omniops_backend.entity.Payment;
 import com.omniops.omniops_backend.repository.PaymentRepository;
 import com.omniops.omniops_backend.service.PaymentService;
@@ -14,11 +18,49 @@ import java.util.Optional;
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
+private final EnrollmentRepository enrollmentRepository;
+  @Override
+public Payment savePayment(Payment payment) {
 
-    @Override
-    public Payment savePayment(Payment payment) {
-        return paymentRepository.save(payment);
+    Payment savedPayment = paymentRepository.save(payment);
+
+    if ("Paid".equalsIgnoreCase(savedPayment.getPaymentStatus())) {
+
+        boolean exists = enrollmentRepository.existsByCandidateName(
+                savedPayment.getCandidateName()
+        );
+
+        if (!exists) {
+
+            Enrollment enrollment = new Enrollment();
+
+            enrollment.setCandidateName(savedPayment.getCandidateName());
+            enrollment.setTechnology(savedPayment.getTechnology());
+            enrollment.setRecruiterName(savedPayment.getRecruiterName());
+            enrollment.setAmountPaid(savedPayment.getAmount());
+           enrollment.setEnrollmentDate(savedPayment.getPaymentDate());
+
+            enrollment.setTrainerName("");
+
+            // IMPORTANT:
+            // If your Enrollment entity has batchNumber:
+            enrollment.setBatchNumber("Session 1");
+
+            // If your Enrollment entity has session instead,
+            // replace the above line with:
+            // enrollment.setSession("Session 1");
+
+            enrollment.setMode("Online");
+            enrollment.setDuration("");
+            enrollment.setCurrentStatus("Enrolled");
+            enrollment.setRemarks("");
+
+            enrollmentRepository.save(enrollment);
+        }
     }
+
+    return savedPayment;
+}
 
     @Override
     public List<Payment> getAllPayments() {
@@ -65,7 +107,55 @@ public class PaymentServiceImpl implements PaymentService {
 
         existing.setUpdatedBy(payment.getUpdatedBy());
 
-        return paymentRepository.save(existing);
+       Payment updatedPayment = paymentRepository.save(existing);
+
+if ("Paid".equalsIgnoreCase(updatedPayment.getPaymentStatus())) {
+
+    boolean exists = enrollmentRepository.existsByCandidateName(
+            updatedPayment.getCandidateName()
+    );
+
+    if (!exists) {
+
+        Enrollment enrollment = new Enrollment();
+
+        enrollment.setCandidateName(
+                updatedPayment.getCandidateName()
+        );
+
+        enrollment.setTechnology(
+                updatedPayment.getTechnology()
+        );
+
+        enrollment.setRecruiterName(
+                updatedPayment.getRecruiterName()
+        );
+
+        enrollment.setAmountPaid(
+                updatedPayment.getAmount()
+        );
+
+        enrollment.setEnrollmentDate(
+                updatedPayment.getPaymentDate()
+        );
+
+        enrollment.setTrainerName("");
+
+        enrollment.setBatchNumber("Session 1");
+
+        enrollment.setMode("Online");
+
+        enrollment.setDuration("");
+
+        enrollment.setCurrentStatus("Enrolled");
+
+        enrollment.setRemarks("");
+
+        enrollmentRepository.save(enrollment);
+    }
+}
+
+return updatedPayment;
     }
 
     @Override
