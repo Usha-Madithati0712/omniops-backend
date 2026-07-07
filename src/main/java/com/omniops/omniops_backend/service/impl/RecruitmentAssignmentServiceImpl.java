@@ -1,7 +1,9 @@
 package com.omniops.omniops_backend.service.impl;
 
 import com.omniops.omniops_backend.entity.RecruitmentAssignment;
+import com.omniops.omniops_backend.entity.JobApplication;
 import com.omniops.omniops_backend.repository.RecruitmentAssignmentRepository;
+import com.omniops.omniops_backend.repository.JobApplicationRepository;
 import com.omniops.omniops_backend.service.RecruitmentAssignmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,11 +15,45 @@ import java.util.List;
 public class RecruitmentAssignmentServiceImpl implements RecruitmentAssignmentService {
 
     private final RecruitmentAssignmentRepository repository;
+private final JobApplicationRepository jobApplicationRepository;
+ @Override
+public RecruitmentAssignment save(RecruitmentAssignment assignment) {
 
-    @Override
-    public RecruitmentAssignment save(RecruitmentAssignment assignment) {
-        return repository.save(assignment);
+    if (assignment.getStatus() == null ||
+            assignment.getStatus().trim().isEmpty()) {
+
+        assignment.setStatus("Assigned");
     }
+
+    RecruitmentAssignment saved = repository.save(assignment);
+
+    boolean exists = jobApplicationRepository.existsByClientName(
+            saved.getClientName()
+    );
+
+    if (!exists) {
+
+        JobApplication application = new JobApplication();
+
+        application.setClientName(saved.getClientName());
+
+        application.setRecruiterName(saved.getRecruiterName());
+
+        application.setRoleApplied("");
+
+        application.setCompanyApplied("");
+
+        application.setAppliedDate(java.time.LocalDate.now());
+
+        application.setStatus("Applied");
+
+        application.setRemarks("");
+
+        jobApplicationRepository.save(application);
+    }
+
+    return saved;
+}
 
     @Override
     public List<RecruitmentAssignment> findAll() {
