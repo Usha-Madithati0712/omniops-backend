@@ -1,7 +1,11 @@
 package com.omniops.omniops_backend.service.impl;
 
 import com.omniops.omniops_backend.entity.JobApplication;
+import com.omniops.omniops_backend.entity.Interview;
+
 import com.omniops.omniops_backend.repository.JobApplicationRepository;
+import com.omniops.omniops_backend.repository.InterviewRepository;
+
 import com.omniops.omniops_backend.service.JobApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,20 +16,54 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JobApplicationServiceImpl implements JobApplicationService {
 
-    private final JobApplicationRepository repository;
+   private final JobApplicationRepository repository;
 
-    @Override
-    public JobApplication save(JobApplication jobApplication) {
+private final InterviewRepository interviewRepository;
 
-        if (jobApplication.getStatus() == null ||
-                jobApplication.getStatus().trim().isEmpty()) {
+  @Override
+public JobApplication save(JobApplication jobApplication) {
 
-            jobApplication.setStatus("Applied");
-        }
+    if (jobApplication.getStatus() == null ||
+            jobApplication.getStatus().trim().isEmpty()) {
 
-        return repository.save(jobApplication);
+        jobApplication.setStatus("Applied");
     }
 
+    JobApplication saved = repository.save(jobApplication);
+
+    if ("Interview Scheduled".equals(saved.getStatus())) {
+
+        boolean exists =
+                interviewRepository.existsByClientNameAndCompanyName(
+
+                        saved.getClientName(),
+
+                        saved.getCompanyApplied()
+
+                );
+
+        if (!exists) {
+
+            Interview interview = new Interview();
+
+            interview.setClientName(saved.getClientName());
+
+            interview.setCompanyName(saved.getCompanyApplied());
+
+            interview.setRoleName(saved.getRoleApplied());
+
+            interview.setRecruiterName(saved.getRecruiterName());
+
+            interview.setStatus("Scheduled");
+
+            interviewRepository.save(interview);
+
+        }
+
+    }
+
+    return saved;
+}
     @Override
     public List<JobApplication> findAll() {
         return repository.findAll();
@@ -50,7 +88,40 @@ public class JobApplicationServiceImpl implements JobApplicationService {
         existing.setStatus(jobApplication.getStatus());
         existing.setRemarks(jobApplication.getRemarks());
 
-        return repository.save(existing);
+        JobApplication updated = repository.save(existing);
+
+if ("Interview Scheduled".equals(updated.getStatus())) {
+
+    boolean exists =
+            interviewRepository.existsByClientNameAndCompanyName(
+
+                    updated.getClientName(),
+
+                    updated.getCompanyApplied()
+
+            );
+
+    if (!exists) {
+
+        Interview interview = new Interview();
+
+        interview.setClientName(updated.getClientName());
+
+        interview.setCompanyName(updated.getCompanyApplied());
+
+        interview.setRoleName(updated.getRoleApplied());
+
+        interview.setRecruiterName(updated.getRecruiterName());
+
+        interview.setStatus("Scheduled");
+
+        interviewRepository.save(interview);
+
+    }
+
+}
+
+return updated;
     }
 
     @Override
