@@ -11,7 +11,7 @@ import java.util.UUID;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import java.net.MalformedURLException;
-@Service
+@Service("storageFileStorageService")
 public class FileStorageService {
 
     @Value("${file.upload-dir}")
