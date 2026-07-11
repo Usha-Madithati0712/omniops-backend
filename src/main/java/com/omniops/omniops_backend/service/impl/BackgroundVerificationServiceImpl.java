@@ -134,7 +134,10 @@ document.setClientName(client.getCompanyName());
     document.setUploadedBy("Recruiter");
 
     document.setUploadedAt(LocalDateTime.now());
-
+System.out.println("=================================");
+System.out.println("Document BGV ID = " + document.getBgvId());
+System.out.println("Document Type = " + document.getDocumentType());
+System.out.println("=================================");
     backgroundDocumentRepository.save(document);
 
 }
