@@ -136,12 +136,12 @@ document.setClientName(client.getCompanyName());
     document.setUploadedBy("Recruiter");
 
     document.setUploadedAt(LocalDateTime.now());
-System.out.println("==================================");
-System.out.println("BGV ID from bgv      = " + bgv.getBgvId());
-System.out.println("BGV ID in document   = " + document.getBgvId());
-System.out.println("Client ID            = " + document.getClientId());
-System.out.println("Document Type        = " + document.getDocumentType());
-System.out.println("==================================");
+System.out.println("===============");
+System.out.println("BGV in bgv object      = " + bgv.getBgvId());
+System.out.println("BGV in document object = " + document.getBgvId());
+System.out.println("Client ID             = " + document.getClientId());
+System.out.println("Document Type         = " + document.getDocumentType());
+System.out.println("===============");
 
 backgroundDocumentRepository.save(document);
 
