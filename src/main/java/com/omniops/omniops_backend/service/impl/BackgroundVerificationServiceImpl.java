@@ -1,7 +1,7 @@
 package com.omniops.omniops_backend.service.impl;
 import com.omniops.omniops_backend.entity.BackgroundDocument;
 import com.omniops.omniops_backend.repository.BackgroundDocumentRepository;
-import com.omniops.omniops_backend.service.FileStorageService;
+import com.omniops.omniops_backend.service.storage.FileStorageService;
 import com.omniops.omniops_backend.entity.BackgroundVerification;
 import com.omniops.omniops_backend.entity.Client;
 import com.omniops.omniops_backend.repository.BackgroundVerificationRepository;
@@ -78,18 +78,20 @@ bgv.setStatus("Completed");
 bgv.setSubmittedAt(LocalDateTime.now());
 
 BackgroundVerification savedBGV = repository.save(bgv);
-
-saveDocument(client, resumeFile, "Resume");
-saveDocument(client, optFile, "OPT");
-saveDocument(client, licenseFile, "Driving License");
-saveDocument(client, aadhaarFile, "Aadhaar");
-saveDocument(client, ssnFile, "SSN");
-saveDocument(client, stateIdFile, "State ID");
-saveDocument(client, passportFile, "Passport");
-saveDocument(client, degreeFile, "Degree");
-saveDocument(client, transcriptFile, "Transcript");
-saveDocument(client, chequeFile, "Void Cheque");
-saveDocument(client, zipFile, "ZIP");
+System.out.println("=================================");
+System.out.println("Saved BGV ID = " + savedBGV.getBgvId());
+System.out.println("=================================");
+saveDocument(savedBGV, client, resumeFile, "Resume");
+saveDocument(savedBGV, client, optFile, "OPT");
+saveDocument(savedBGV, client, licenseFile, "Driving License");
+saveDocument(savedBGV, client, aadhaarFile, "Aadhaar");
+saveDocument(savedBGV, client, ssnFile, "SSN");
+saveDocument(savedBGV, client, stateIdFile, "State ID");
+saveDocument(savedBGV, client, passportFile, "Passport");
+saveDocument(savedBGV, client, degreeFile, "Degree");
+saveDocument(savedBGV, client, transcriptFile, "Transcript");
+saveDocument(savedBGV, client, chequeFile, "Void Cheque");
+saveDocument(savedBGV, client, zipFile, "ZIP");
 
 return savedBGV;
     }
@@ -101,19 +103,21 @@ return savedBGV;
 
     }
 private void saveDocument(
+        BackgroundVerification bgv,
         Client client,
         MultipartFile file,
         String documentType
-) throws IOException {
+)throws IOException {
 
     if (file == null || file.isEmpty()) {
         return;
     }
 
-    String fileUrl = fileStorageService.storeFile(file);
+  String storedFileName =
+        fileStorageService.saveFile(file, "background-verification");
 
     BackgroundDocument document = new BackgroundDocument();
-
+document.setBgvId(bgv.getBgvId());
     document.setClientId(client.getClientId());
 document.setClientName(client.getCompanyName());
 
@@ -121,9 +125,11 @@ document.setClientName(client.getCompanyName());
 
     document.setOriginalFileName(file.getOriginalFilename());
 
-    document.setStoredFileName(fileUrl);
+  document.setStoredFileName(storedFileName);
 
-    document.setFileUrl(fileUrl);
+   document.setFileUrl(
+        "/uploads/background-verification/" + storedFileName
+);
 
     document.setUploadedBy("Recruiter");
 
