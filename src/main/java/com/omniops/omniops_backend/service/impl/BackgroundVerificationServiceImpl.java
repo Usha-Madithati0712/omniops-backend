@@ -118,6 +118,8 @@ private void saveDocument(
 
     BackgroundDocument document = new BackgroundDocument();
 document.setBgvId(bgv.getBgvId());
+System.out.println("BGV ID from entity = " + bgv.getBgvId());
+System.out.println("BGV ID inside document = " + document.getBgvId());
     document.setClientId(client.getClientId());
 document.setClientName(client.getCompanyName());
 
@@ -134,11 +136,12 @@ document.setClientName(client.getCompanyName());
     document.setUploadedBy("Recruiter");
 
     document.setUploadedAt(LocalDateTime.now());
-System.out.println("=================================");
+System.out.println("================================");
+System.out.println("Saved BGV ID = " + bgv.getBgvId());
 System.out.println("Document BGV ID = " + document.getBgvId());
-System.out.println("Document Type = " + document.getDocumentType());
-System.out.println("=================================");
-    backgroundDocumentRepository.save(document);
+System.out.println("================================");
+
+backgroundDocumentRepository.save(document);
 
 }
 }
