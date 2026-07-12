@@ -21,5 +21,11 @@ public class BackgroundDocumentController {
 
         return repository.findByBgvId(bgvId);
     }
+@GetMapping("/client/{clientId}")
+public List<BackgroundDocument> getDocumentsByClientId(
+        @PathVariable Integer clientId) {
 
+    return repository.findByClientId(clientId);
+
+}
 }

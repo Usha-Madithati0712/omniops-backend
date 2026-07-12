@@ -89,11 +89,21 @@ System.out.println("############################");
 
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<BackgroundVerification>> getAllBackgroundVerifications() {
+   @GetMapping("/all")
+public ResponseEntity<?> getAllBackgroundVerifications() {
 
-        return ResponseEntity.ok(
-                backgroundVerificationRepository.findAll());
+    try {
+
+        return ResponseEntity.ok(backgroundVerificationRepository.findAll());
+
+    } catch (Exception e) {
+
+        e.printStackTrace();
+
+        return ResponseEntity.internalServerError()
+                .body(e.getMessage());
 
     }
+
+}
 }
