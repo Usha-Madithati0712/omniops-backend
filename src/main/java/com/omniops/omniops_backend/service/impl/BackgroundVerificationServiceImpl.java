@@ -78,9 +78,14 @@ bgv.setStatus("Completed");
 bgv.setSubmittedAt(LocalDateTime.now());
 
 BackgroundVerification savedBGV = repository.save(bgv);
-System.out.println("=================================");
-System.out.println("Saved BGV ID = " + savedBGV.getBgvId());
-System.out.println("=================================");
+
+System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+System.out.println("AFTER BGV SAVE");
+System.out.println("BGV ID = " + savedBGV.getBgvId());
+System.out.println("Resume Object = " + resumeFile);
+System.out.println("CALLING saveDocument()");
+System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+
 saveDocument(savedBGV, client, resumeFile, "Resume");
 saveDocument(savedBGV, client, optFile, "OPT");
 saveDocument(savedBGV, client, licenseFile, "Driving License");
