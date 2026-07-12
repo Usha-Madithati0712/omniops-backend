@@ -91,13 +91,17 @@ System.out.println("############################");
 @GetMapping("/all")
 public ResponseEntity<?> getAllBackgroundVerifications() {
 
-    System.out.println("========== INSIDE /all ==========");
-
     List<BackgroundVerification> list =
             backgroundVerificationRepository.findAll();
 
-    System.out.println("TOTAL = " + list.size());
+    for (BackgroundVerification bgv : list) {
 
-    return ResponseEntity.ok("SUCCESS");
+        System.out.println("BGV = " + bgv.getBgvId());
+
+        System.out.println("Candidate = " + bgv.getFullName());
+
+    }
+
+    return ResponseEntity.ok(list);
 }
 }
