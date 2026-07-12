@@ -109,9 +109,25 @@ private void saveDocument(
         String documentType
 )throws IOException {
 
-    if (file == null || file.isEmpty()) {
-        return;
-    }
+   if (file == null) {
+    System.out.println("================================");
+    System.out.println("FILE IS NULL : " + documentType);
+    System.out.println("================================");
+    return;
+}
+
+if (file.isEmpty()) {
+    System.out.println("================================");
+    System.out.println("FILE IS EMPTY : " + documentType);
+    System.out.println("================================");
+    return;
+}
+
+System.out.println("================================");
+System.out.println("FILE RECEIVED : " + documentType);
+System.out.println("NAME : " + file.getOriginalFilename());
+System.out.println("SIZE : " + file.getSize());
+System.out.println("================================");
 
   String storedFileName =
         fileStorageService.saveFile(file, "background-verification");
