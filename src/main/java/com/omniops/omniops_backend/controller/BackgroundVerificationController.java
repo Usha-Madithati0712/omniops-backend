@@ -55,7 +55,10 @@ public class BackgroundVerificationController {
             @RequestParam(required = false) MultipartFile zipFile
 
     ) throws IOException {
-
+System.out.println("############################");
+System.out.println("CONTROLLER HIT");
+System.out.println("resumeFile = " + resumeFile);
+System.out.println("############################");
         BackgroundVerification bgv = backgroundVerificationService.submit(
                 clientId,
                 fullName,
