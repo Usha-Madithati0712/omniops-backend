@@ -2,7 +2,8 @@ package com.omniops.omniops_backend.controller;
 
 import com.omniops.omniops_backend.repository.BackgroundVerificationRepository;
 import com.omniops.omniops_backend.entity.BackgroundVerification;
-
+import com.omniops.omniops_backend.dto.CEOBGVResponse;
+import java.util.ArrayList;
 import com.omniops.omniops_backend.service.BackgroundVerificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -88,20 +89,39 @@ System.out.println("############################");
                 backgroundVerificationService.getByClient(clientId));
 
     }
-@GetMapping("/all")
+    @GetMapping("/all")
 public ResponseEntity<?> getAllBackgroundVerifications() {
 
-    List<BackgroundVerification> list =
+    List<BackgroundVerification> bgvs =
             backgroundVerificationRepository.findAll();
 
-    for (BackgroundVerification bgv : list) {
+    List<CEOBGVResponse> response = new ArrayList<>();
 
-        System.out.println("BGV = " + bgv.getBgvId());
+    for (BackgroundVerification bgv : bgvs) {
 
-        System.out.println("Candidate = " + bgv.getFullName());
+        CEOBGVResponse dto = new CEOBGVResponse();
 
+        dto.setBgvId(bgv.getBgvId());
+
+        if (bgv.getClient() != null) {
+
+            dto.setClientId(bgv.getClient().getClientId());
+
+            dto.setClientName(bgv.getClient().getCompanyName());
+
+        }
+
+        dto.setCandidateName(bgv.getFullName());
+
+        dto.setRecruiter(bgv.getSubmittedBy());
+
+        dto.setStatus(bgv.getStatus());
+
+        dto.setSubmittedAt(bgv.getSubmittedAt());
+
+        response.add(dto);
     }
 
-    return ResponseEntity.ok(list);
+    return ResponseEntity.ok(response);
 }
 }
