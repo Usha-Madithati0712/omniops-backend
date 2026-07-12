@@ -136,7 +136,8 @@ System.out.println("================================");
 
   String storedFileName =
         fileStorageService.saveFile(file, "background-verification");
-
+System.out.println("FILE STORED");
+System.out.println(storedFileName);
     BackgroundDocument document = new BackgroundDocument();
 document.setBgvId(bgv.getBgvId());
 System.out.println("BGV ID from entity = " + bgv.getBgvId());
@@ -163,7 +164,10 @@ System.out.println("BGV in document object = " + document.getBgvId());
 System.out.println("Client ID             = " + document.getClientId());
 System.out.println("Document Type         = " + document.getDocumentType());
 System.out.println("===============");
+System.out.println("ABOUT TO SAVE DOCUMENT");
+backgroundDocumentRepository.save(document);
 
+System.out.println("DOCUMENT SAVED SUCCESSFULLY");
 backgroundDocumentRepository.save(document);
 
 
