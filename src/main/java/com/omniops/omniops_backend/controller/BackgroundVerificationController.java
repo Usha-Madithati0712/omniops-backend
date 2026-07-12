@@ -88,23 +88,16 @@ System.out.println("############################");
                 backgroundVerificationService.getByClient(clientId));
 
     }
-
- @GetMapping("/all")
+@GetMapping("/all")
 public ResponseEntity<?> getAllBackgroundVerifications() {
 
-    try {
+    System.out.println("========== INSIDE /all ==========");
 
-        return ResponseEntity.ok(
-                backgroundVerificationRepository.findAll());
+    List<BackgroundVerification> list =
+            backgroundVerificationRepository.findAll();
 
-    } catch (Exception e) {
+    System.out.println("TOTAL = " + list.size());
 
-        e.printStackTrace();
-
-        return ResponseEntity.internalServerError()
-                .body(e.toString());
-
-    }
-
+    return ResponseEntity.ok("SUCCESS");
 }
 }
