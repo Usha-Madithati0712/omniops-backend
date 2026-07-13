@@ -51,7 +51,10 @@ public class FileStorageService {
                 destination,
                 StandardCopyOption.REPLACE_EXISTING
         );
-
+System.out.println("==================================");
+System.out.println("FILE SAVED TO : " + destination.toAbsolutePath());
+System.out.println("FILE EXISTS : " + Files.exists(destination));
+System.out.println("==================================");
        return fileName;
     }
 public Resource loadFile(String folder, String fileName) throws MalformedURLException {
