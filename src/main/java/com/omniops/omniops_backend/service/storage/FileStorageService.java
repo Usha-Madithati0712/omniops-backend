@@ -60,7 +60,8 @@ System.out.println("==================================");
 public Resource loadFile(String folder, String fileName) throws MalformedURLException {
 
     Path filePath = Paths.get(uploadDir, folder).resolve(fileName).normalize();
-
+System.out.println("Looking for file: " + filePath.toAbsolutePath());
+System.out.println("Exists: " + Files.exists(filePath));
     Resource resource = new UrlResource(filePath.toUri());
 
     if(resource.exists() && resource.isReadable()){
