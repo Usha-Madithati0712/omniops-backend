@@ -1,5 +1,9 @@
 package com.omniops.omniops_backend.controller;
-
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import com.omniops.omniops_backend.entity.BackgroundDocument;
 import com.omniops.omniops_backend.repository.BackgroundDocumentRepository;
 import com.omniops.omniops_backend.service.storage.FileStorageService;
@@ -12,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -73,4 +80,23 @@ public class BackgroundDocumentController {
                 )
                 .body(resource);
     }
+    @GetMapping("/debug/{id}")
+public ResponseEntity<?> debug(@PathVariable Long id) {
+
+    BackgroundDocument doc = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Document not found"));
+
+    Path path = Paths.get("uploads",
+            "background-verification",
+            doc.getStoredFileName());
+
+    Map<String, Object> result = new HashMap<>();
+
+    result.put("storedFileName", doc.getStoredFileName());
+    result.put("absolutePath", path.toAbsolutePath().toString());
+    result.put("exists", Files.exists(path));
+    result.put("readable", Files.isReadable(path));
+
+    return ResponseEntity.ok(result);
+}
 }
