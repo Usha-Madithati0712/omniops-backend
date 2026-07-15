@@ -12,112 +12,153 @@ import com.omniops.omniops_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import com.omniops.omniops_backend.dto.ClientSignupRequest;
+import com.omniops.omniops_backend.repository.RoleRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+        @Autowired
+        private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+        @Autowired
+        private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private JwtService jwtService;
+        @Autowired
+        private JwtService jwtService;
+        @Autowired
+        private RoleRepository roleRepository;
+        @Autowired
+        private PermissionService permissionService;
 
-    @Autowired
-    private PermissionService permissionService;
+        @Override
+        public String register(RegisterRequest request) {
 
-    @Override
-    public String register(RegisterRequest request) {
+                if (userRepository.existsByEmail(request.getEmail())) {
+                        return "Email already exists";
+                }
 
-        if (userRepository.existsByEmail(request.getEmail())) {
-            return "Email already exists";
+                if (userRepository.existsByEmployeeCode(request.getEmployeeCode())) {
+                        return "Employee Code already exists";
+                }
+
+                User user = new User();
+
+                user.setEmployeeCode(request.getEmployeeCode());
+                user.setFullName(request.getFullName());
+                user.setEmail(request.getEmail());
+                user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+                user.setPhone(request.getPhone());
+                user.setUsername(request.getEmployeeCode().toLowerCase());
+                Role role = new Role();
+                role.setRoleId(request.getRoleId());
+
+                user.setRole(role);
+
+                user.setStatus(User.Status.Active);
+
+                userRepository.save(user);
+
+                return "User Registered Successfully";
         }
 
-        if (userRepository.existsByEmployeeCode(request.getEmployeeCode())) {
-            return "Employee Code already exists";
+        @Override
+        public String clientRegister(ClientSignupRequest request) {
+
+                if (userRepository.existsByEmail(request.getEmail())) {
+
+                        return "Email already exists";
+
+                }
+
+                Role clientRole = roleRepository
+                                .findByRoleName("Client")
+                                .orElseThrow(() -> new RuntimeException("Client role not found"));
+
+                User user = new User();
+
+                user.setFullName(request.getFullName());
+
+                user.setEmail(request.getEmail());
+
+                user.setPhone(request.getPhone());
+
+                user.setPasswordHash(
+                                passwordEncoder.encode(request.getPassword()));
+
+                user.setUsername(request.getEmail());
+
+                user.setRole(clientRole);
+
+                user.setStatus(User.Status.Active);
+
+                user.setEmployeeCode("TEMP_CLIENT");
+
+                userRepository.save(user);
+
+                String clientCode = String.format("CLIENT%05d", user.getUserId());
+
+                user.setEmployeeCode(clientCode);
+
+                userRepository.save(user);
+
+                return "Client Registered Successfully";
+
         }
 
-        User user = new User();
+        @Override
+        public LoginResponse login(LoginRequest request) {
 
-        user.setEmployeeCode(request.getEmployeeCode());
-        user.setFullName(request.getFullName());
-        user.setEmail(request.getEmail());
-        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setPhone(request.getPhone());
-user.setUsername(request.getEmployeeCode().toLowerCase());
-        Role role = new Role();
-        role.setRoleId(request.getRoleId());
+                User user = userRepository.findByEmail(request.getEmail())
+                                .orElse(null);
 
-        user.setRole(role);
+                if (user == null) {
+                        return new LoginResponse(
+                                        false,
+                                        "Invalid Email",
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null);
+                }
 
-        user.setStatus(User.Status.Active);
+                if (!passwordEncoder.matches(
+                                request.getPassword(),
+                                user.getPasswordHash())) {
 
-        userRepository.save(user);
+                        return new LoginResponse(
+                                        false,
+                                        "Invalid Password",
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null);
+                }
 
-        return "User Registered Successfully";
-    }
+                String token = jwtService.generateToken(user.getEmail());
 
-    @Override
-    public LoginResponse login(LoginRequest request) {
+                List<String> permissions = permissionService.getPermissionsByRole(
+                                user.getRole().getRoleId());
+                System.out.println("ROLE ID = " + user.getRole().getRoleId());
+                System.out.println("PERMISSIONS = " + permissions);
+                user.setLastLogin(LocalDateTime.now());
 
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElse(null);
+                userRepository.save(user);
 
-        if (user == null) {
-            return new LoginResponse(
-                    false,
-                    "Invalid Email",
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
-            );
+                return new LoginResponse(
+                                true,
+                                "Login Successful",
+                                token,
+                                user.getUserId(),
+                                user.getFullName(),
+                                user.getEmail(),
+                                user.getRole().getRoleName(),
+                                permissions);
         }
-
-        if (!passwordEncoder.matches(
-                request.getPassword(),
-                user.getPasswordHash())) {
-
-            return new LoginResponse(
-                    false,
-                    "Invalid Password",
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
-            );
-        }
-
-        String token = jwtService.generateToken(user.getEmail());
-
-        List<String> permissions =
-                permissionService.getPermissionsByRole(
-                        user.getRole().getRoleId()
-                );
-System.out.println("ROLE ID = " + user.getRole().getRoleId());
-System.out.println("PERMISSIONS = " + permissions);
-        user.setLastLogin(LocalDateTime.now());
-
-        userRepository.save(user);
-
-        return new LoginResponse(
-                true,
-                "Login Successful",
-                token,
-                user.getUserId(),
-                user.getFullName(),
-                user.getEmail(),
-                user.getRole().getRoleName(),
-                permissions
-        );
-    }
 }

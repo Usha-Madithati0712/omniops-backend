@@ -60,13 +60,26 @@ public BackgroundVerification submit(
 
 ) throws IOException {
 
-       Client client = clientRepository.findById(clientId)
+       System.out.println("=================================");
+System.out.println("CLIENT ID RECEIVED FROM FRONTEND = " + clientId);
+System.out.println("=================================");
+
+Client client = clientRepository.findById(clientId)
         .orElseThrow(() -> new RuntimeException("Client not found"));
+       System.out.println("=================================");
+System.out.println("CLIENT LOADED");
+System.out.println("ID   = " + client.getClientId());
+System.out.println("NAME = " + client.getCompanyName());
+System.out.println("=================================");
 
 BackgroundVerification bgv = new BackgroundVerification();
 
 bgv.setClient(client);
-
+System.out.println("=================================");
+System.out.println("CLIENT SAVED INTO BGV");
+System.out.println("ID   = " + bgv.getClient().getClientId());
+System.out.println("NAME = " + bgv.getClient().getCompanyName());
+System.out.println("=================================");
 bgv.setFullName(fullName);
 
 bgv.setPhoneNumber(phoneNumber);
@@ -168,7 +181,7 @@ System.out.println("ABOUT TO SAVE DOCUMENT");
 backgroundDocumentRepository.save(document);
 
 System.out.println("DOCUMENT SAVED SUCCESSFULLY");
-backgroundDocumentRepository.save(document);
+
 
 
 
