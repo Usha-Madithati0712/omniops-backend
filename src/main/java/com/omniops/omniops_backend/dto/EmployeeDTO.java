@@ -1,11 +1,13 @@
 package com.omniops.omniops_backend.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class RegisterRequest {
+@AllArgsConstructor
+public class EmployeeDTO {
 
-    private String username;
+    private Integer userId;
 
     private String employeeCode;
 
@@ -13,13 +15,7 @@ public class RegisterRequest {
 
     private String email;
 
-    private String password;
-
     private String phone;
-
-    private Integer roleId;
-
-    // NEW FIELDS
 
     private String department;
 
@@ -27,7 +23,7 @@ public class RegisterRequest {
 
     private String reportingManager;
 
-    private String dashboardRedirect;
+    private String role;
 
     private String status;
 

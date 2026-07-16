@@ -15,6 +15,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     boolean existsByEmail(String email);
 
     boolean existsByEmployeeCode(String employeeCode);
+    List<User> findAllByOrderByUserIdDesc();
 @Query("""
 SELECT u
 FROM User u
